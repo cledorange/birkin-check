@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>バーキン出会い診断</title>
+
+<style>
+
+body{
+  margin:0;
+  padding:20px;
+  background:#f7f3ee;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    "Yu Gothic",
+    sans-serif;
+  color:#333;
+}
+
+#birkin-diagnosis{
+  max-width:520px;
+  margin:40px auto;
+  padding:36px 24px;
+  background:#fffaf5;
+  border-radius:24px;
+  box-shadow:0 6px 24px rgba(0,0,0,0.12);
+  border:2px solid #f2d2a2;
+}
+
+.title{
+  text-align:center;
+  color:#ff7a00;
+  font-size:36px;
+  font-weight:bold;
+  margin-bottom:22px;
+  line-height:1.5;
+  letter-spacing:1px;
+}
+
+.sub{
+  text-align:center;
+  color:#666;
+  line-height:1.9;
+  margin-bottom:32px;
+  font-size:18px;
+}
+
+#progress{
+  text-align:center;
+  color:#999;
+  margin-bottom:20px;
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+#question{
+  font-size:24px;
+  line-height:1.8;
+  text-align:center;
+  min-height:160px;
+  margin-bottom:30px;
+}
+
+.buttons{
+  display:flex;
+  gap:16px;
+}
+
+.answer-btn{
+  flex:1;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:#f3e7d8;
+  color:#8b5e34;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.answer-btn:hover{
+  transform:translateY(-2px);
+  background:#e9d2b6;
+}
+
+#result{
+  display:none;
+  text-align:center;
+  margin-top:30px;
+}
+
+.score-label{
+  font-size:22px;
+  color:#ff7a00;
+  font-weight:bold;
+  margin-bottom:14px;
+  line-height:1.6;
+}
+
+#score{
+  font-size:84px;
+  font-weight:bold;
+  color:#ff7a00;
+  margin-bottom:24px;
+  line-height:1;
+  text-shadow:0 2px 6px rgba(255,122,0,0.15);
+}
+
+#comment{
+  font-size:18px;
+  line-height:1.9;
+  color:#444;
+}
+
+.result-link{
+  display:inline-block;
+  margin-top:10px;
+  color:#ff7a00;
+  font-weight:bold;
+  text-decoration:none;
+  border-bottom:1px solid #ff7a00;
+  padding-bottom:2px;
+}
+
+.result-link:hover{
+  opacity:0.7;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="birkin-diagnosis">
+
+  <div class="title">
+    🍊バーキン出会い診断🍊
+  </div>
+
+  <div class="sub">
+    私、出会える側？<br>
+    あなたのフリーバーキン出会い力を診断！
+  </div>
+
+  <div id="progress"></div>
+
+  <div id="question"></div>
+
+  <div class="buttons">
+
+    <button class="answer-btn" id="yesBtn">
+      YES
+    </button>
+
+    <button class="answer-btn" id="noBtn">
+      NO
+    </button>
+
+  </div>
+
+  <div id="result">
+
+    <div class="score-label">
+      あなたのバーキン出会いスコア
+    </div>
+
+    <div id="score">
+      0点
+    </div>
+
+    <div id="comment"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+const questions = [
+
+  {
+    text:"「今日はバーキンに出会える気がする」と思う日がある",
+    yes:15,
+    no:0
+  },
+
+  {
+    text:"バーキンを買うなら<br>正規店との出会いにこだわりたい",
+    yes:5,
+    no:0
+  },
+
+  {
+    text:"フリーでケリーを紹介されたら<br>心が揺らぐ自信がある",
+    yes:5,
+    no:15
+  },
+
+  {
+    text:"突然のバーキン紹介でもお支払い準備はOK",
+    yes:20,
+    no:0
+  },
+
+  {
+    text:"出会ったバーキン<br>「買う」「買わない」は即答できる",
+    yes:15,
+    no:5
+  },
+
+  {
+    text:"エルメス訪問時は身分証を忘れないようにしている",
+    yes:15,
+    no:5
+  }
+
+];
+
+let current = 0;
+let total = 0;
+
+const progress =
+  document.getElementById("progress");
+
+const question =
+  document.getElementById("question");
+
+const result =
+  document.getElementById("result");
+
+const score =
+  document.getElementById("score");
+
+const comment =
+  document.getElementById("comment");
+
+function showQuestion(){
+
+  progress.innerHTML =
+    "QUESTION " +
+    (current + 1) +
+    " / " +
+    questions.length;
+
+  question.innerHTML =
+    questions[current].text;
+}
+
+function answer(type){
+
+  if(type === "yes"){
+    total += questions[current].yes;
+  }else{
+    total += questions[current].no;
+  }
+
+  current++;
+
+  if(current < questions.length){
+
+    showQuestion();
+
+  }else{
+
+    showResult();
+
+  }
+}
+
+function showResult(){
+
+  progress.style.display = "none";
+  question.style.display = "none";
+
+  document.querySelector(".buttons")
+    .style.display = "none";
+
+  result.style.display = "block";
+
+  score.innerHTML = total + "点";
+
+  let message = "";
+
+  if(total >= 80){
+
+    message =
+      "かなりバーキン遭遇準備が整っています。<br>" +
+      "最終準備で突然の出会いに備えましょう！<br><br>" +
+
+      "<a class='result-link' " +
+      "href='https://ameblo.jp/cledorange/entry-12962307150.html?utm_source=check' " +
+      "target='_blank'>" +
+
+      "フリーの「出会い」はすぐそこに？" +
+
+      "</a>";
+
+  }else if(total >= 60){
+
+    message =
+      "出会い力は平均以上。<br>" +
+      "あと少し準備を整えると、チャンスを掴みやすくなるかも？<br><br>" +
+
+      "<a class='result-link' " +
+      "href='https://ameblo.jp/cledorange/entry-12961877853.html?utm_source=check' " +
+      "target='_blank'>" +
+
+      "フリーバーキン・ケリーが出るタイミングはこちら" +
+
+      "</a>";
+
+  }else{
+
+    message =
+      "まだ準備不足かもしれません。<br>" +
+      "『出会いの基本』を抑えて行動すると良いかも？<br><br>" +
+
+      "<a class='result-link' " +
+      "href='https://ameblo.jp/cledorange/entry-12928139477.html?utm_source=check' " +
+      "target='_blank'>" +
+
+      "エルメス訪問時の基本行動はこちら" +
+
+      "</a>";
+
+  }
+
+  comment.innerHTML = message;
+}
+
+document.getElementById("yesBtn")
+  .addEventListener("click", function(){
+    answer("yes");
+  });
+
+document.getElementById("noBtn")
+  .addEventListener("click", function(){
+    answer("no");
+  });
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
